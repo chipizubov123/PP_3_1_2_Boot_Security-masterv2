@@ -44,13 +44,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional()
     public void updateUser(User user) {
+        user.setPassword(bCryptPasswordEncode.encode(user.getPassword()));
         userDAO.updateUser(user);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional()
     public void removeUserById(Long id) {
         userDAO.removeUserById(id);
     }

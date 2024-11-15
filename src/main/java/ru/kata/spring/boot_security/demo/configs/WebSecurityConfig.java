@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,7 +22,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final SuccessUserHandler successUserHandler;
 
     @Autowired
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, @Qualifier("userServiceImpl") UserDetailsService userDetailsService) {
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, @Lazy @Qualifier("userServiceImpl") UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
         this.successUserHandler = successUserHandler;
     }
@@ -43,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(daoAuthenticationProvider());
     }
 
@@ -58,6 +59,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     protected BCryptPasswordEncoder bCryptPasswordEncoder() {
 
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(12);
     }
 }

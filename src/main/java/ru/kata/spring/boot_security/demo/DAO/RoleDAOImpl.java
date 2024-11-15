@@ -1,44 +1,56 @@
 package ru.kata.spring.boot_security.demo.DAO;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.Models.Role;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.HashSet;
 import java.util.Set;
 
 @Repository
 public class RoleDAOImpl implements RoleDAO {
 
-    private EntityManager em;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    @Override
-    public Set<Role> getAllRoles() {
-        return new HashSet<>(em.createQuery("from Role", Role.class).getResultList());
+    @Autowired
+    public RoleDAOImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
-    public Role getRoleByUsername(String username) {
-        return em.createQuery("from Role where name = :username", Role.class).setParameter("username", username).getSingleResult();
+    public Set<Role> getAllRoles() {
+        return new HashSet<>(entityManager.createQuery("from Role", Role.class).getResultList());
+    }
+
+    @Override
+    public Role getRoleByUsername(String name) {
+        return entityManager.createQuery("from Role where name = :name", Role.class).setParameter("name", name).getSingleResult();
     }
 
     @Override
     public Set<Role> getSetOfRoles(String[] roles) {
-        return getAllRoles();
+        Set<Role> roleSet = new HashSet<>();
+        for (String role : roles) {
+            roleSet.add(getRoleByUsername(role));
+        }
+        return roleSet;
     }
 
     @Override
     public void add(Role role) {
-        em.persist(role);
+        entityManager.persist(role);
     }
 
     @Override
     public void edit(Role role) {
-        em.merge(role);
+        entityManager.merge(role);
     }
 
     @Override
     public Role getById(Long id) {
-        return em.find(Role.class, id);
+        return entityManager.find(Role.class, id);
     }
 }

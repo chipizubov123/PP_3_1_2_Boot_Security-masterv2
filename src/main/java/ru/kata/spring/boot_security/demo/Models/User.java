@@ -39,7 +39,8 @@ public class User implements UserDetails {
     @Email
     private String email;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
@@ -116,10 +117,6 @@ public class User implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public UserDetails fromUser(User user){
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), user.getRoles());
     }
 
     @Override
